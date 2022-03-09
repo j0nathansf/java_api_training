@@ -16,6 +16,7 @@ public class Launcher {
                 HttpServer server = HttpServer.create(address, 0);
                 server.setExecutor(Executors.newFixedThreadPool(1));
                 server.createContext("/ping", new PingHandler());
+                server.createContext("/api/game/start", new StartHandler());
                 server.start();
                 System.out.println("Server is listening on port " + port);
             }
