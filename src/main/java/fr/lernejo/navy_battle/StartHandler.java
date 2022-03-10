@@ -9,8 +9,6 @@ import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpRequest;
 
 public class StartHandler implements HttpHandler {
 
@@ -19,16 +17,6 @@ public class StartHandler implements HttpHandler {
         "  \"url\": \"string\",\n" +
         "  \"message\": \"string\",\n" +
         "}");
-
-
-    public HttpRequest communicate() {
-        return HttpRequest.newBuilder()
-            .uri(URI.create(response.getString("url")))
-            .setHeader("Accept", "application/json")
-            .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{\"id\":" +  response.getString("id") + ", url\":\"" + response.getString("url") + "\", \"message\":" + response.getString("message")))
-            .build();
-    }
 
     public boolean verifyBody(HttpExchange exchange) {
         try {
@@ -39,7 +27,6 @@ public class StartHandler implements HttpHandler {
             JSONObject jsonData = new JSONObject(schemaDataFile);
             Schema schemaValidator = SchemaLoader.load(jsonSchema);
             schemaValidator.validate(jsonData);
-            communicate();
             return true;
         } catch(Exception e) {
             return false;
@@ -61,7 +48,6 @@ public class StartHandler implements HttpHandler {
                 break;
         }
     }
-
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
