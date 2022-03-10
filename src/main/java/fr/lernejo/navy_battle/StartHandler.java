@@ -12,6 +12,12 @@ import java.net.HttpURLConnection;
 
 public class StartHandler implements HttpHandler {
 
+    private final JSONObject response = new JSONObject("{\n" +
+        "  \"id\": \"string\",\n" +
+        "  \"url\": \"string\",\n" +
+        "  \"message\": \"string\",\n" +
+        "}");
+
     public boolean verifyBody(HttpExchange exchange) {
         try {
             File schemaFile = new File("src/main/resources/startSchema.json");
@@ -27,18 +33,38 @@ public class StartHandler implements HttpHandler {
         }
     }
 
+    public void setResponse(int code, String url) {
+        response.put("id", "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d");
+        response.put("url", url);
+        switch(code) {
+            case 1:
+                response.put("message", "OK!");
+                break;
+            case 2:
+                response.put("message", "Bad request !");
+                break;
+            default:
+                response.put("message", "Not found !");
+                break;
+        }
+    }
+
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
             if (verifyBody(exchange)) {
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, 3);
-                exchange.getResponseBody().write("OK!".getBytes());
+                setResponse(1, url);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, response.toString().length());
+                exchange.getResponseBody().write(response.toString().getBytes());
             } else {
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, "Bad request !".length());
-                exchange.getResponseBody().write("Bad request !".getBytes());
+                setResponse(2, url);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, response.length());
+                exchange.getResponseBody().write(response.toString().getBytes());
             }
         } else {
+            setResponse(3, url);
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, "Not found !".length());
             exchange.getResponseBody().write("Not found !".getBytes());
         }
