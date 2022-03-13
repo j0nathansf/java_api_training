@@ -10,7 +10,9 @@ import org.json.JSONTokener;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -54,6 +56,7 @@ public class StartHandler implements HttpHandler {
         }
     }
 
+    /*
     public Map<String, String> queryToMap(String query) {
         if(query == null) {
             return null;
@@ -69,25 +72,28 @@ public class StartHandler implements HttpHandler {
         }
         return result;
     }
+    */
 
-    public void createClient(String adversaryUrl) {
+    public void createClient(String adversaryUrl) throws IOException, InterruptedException {
         System.out.println("Here is my opponent url : " + adversaryUrl);
-        HttpRequest.newBuilder()
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest requestPost = HttpRequest.newBuilder()
             .uri(URI.create(adversaryUrl + "/api/game/start"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"1\", \"url\":\"" + adversaryUrl + "\", \"message\":\"Hello\"}"))
             .build();
+        HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
-        Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
+        // Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
         if ("POST".contentEquals(exchange.getRequestMethod())) {
             if (verifyBody(exchange)) {
                 setResponse(1, url);
-                if (!Objects.isNull(params)) createClient(params.get("url"));
+                // if (!Objects.isNull(params)) createClient(params.get("url"));
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, response.toString().length());
                 exchange.getResponseBody().write(response.toString().getBytes());
             } else {

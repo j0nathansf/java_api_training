@@ -15,11 +15,19 @@ public class Launcher {
                 HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
                 server.setExecutor(Executors.newFixedThreadPool(1));
                 server.createContext("/ping", new PingHandler());
-                server.createContext("/api/game/start", new StartHandler());
+                StartHandler start = new StartHandler();
+                server.createContext("/api/game/start", start);
+                if (args.length == 2) {
+                    System.out.println("I have two arguments in my program");
+                    start.createClient(args[1]);
+                }
+                server.createContext("/api/game/fire", new FireHandler());
                 server.start();
                 System.out.println("Server is listening on port " + port);
             }
             catch (NumberFormatException e) {
+                System.err.println(e);
+            } catch (InterruptedException e) {
                 System.err.println(e);
             }
         }
