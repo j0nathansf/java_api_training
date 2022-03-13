@@ -17,17 +17,12 @@ public class Launcher {
                 server.createContext("/ping", new PingHandler());
                 StartHandler start = new StartHandler();
                 server.createContext("/api/game/start", start);
-                if (args.length == 2) {
-                    System.out.println("I have two arguments in my program");
-                    start.createClient(args[1]);
-                }
+                if (args.length == 2) start.createClient(args[1], port);
                 server.createContext("/api/game/fire", new FireHandler());
                 server.start();
                 System.out.println("Server is listening on port " + port);
             }
-            catch (NumberFormatException e) {
-                System.err.println(e);
-            } catch (InterruptedException e) {
+            catch (Exception e) {
                 System.err.println(e);
             }
         }
