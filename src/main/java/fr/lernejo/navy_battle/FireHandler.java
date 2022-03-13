@@ -38,6 +38,7 @@ public class FireHandler implements HttpHandler {
         if ("GET".contentEquals(exchange.getRequestMethod())) {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell"))) {
+                exchange.getResponseHeaders().add("Content-Type", "application/json");
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, response.toString().length());
                 exchange.getResponseBody().write(response.toString().getBytes());
             } else {
