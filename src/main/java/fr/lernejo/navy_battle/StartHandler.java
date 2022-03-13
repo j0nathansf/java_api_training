@@ -75,8 +75,8 @@ public class StartHandler implements HttpHandler {
             exchange.getResponseBody().write(response.toString().getBytes());
         } else {
             setResponse(3, url);
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, "Not found !".length());
-            exchange.getResponseBody().write("Not found !".getBytes());
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, response.toString().length());
+            exchange.getResponseBody().write(response.toString().getBytes());
         }
         exchange.close();
     }
