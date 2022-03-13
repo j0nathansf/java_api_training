@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 public class Launcher {
+
     public static void main(String[] args) throws IOException {
         if (args.length < 1) System.out.println("No port given !");
         else {
@@ -22,9 +23,7 @@ public class Launcher {
                 server.start();
                 System.out.println("Server is listening on port " + port);
             }
-            catch (Exception e) {
-                System.err.println(e);
-            }
+            catch (Exception e) { System.err.println(e); }
         }
     }
 }

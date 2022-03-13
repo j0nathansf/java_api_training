@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.UUID;
 
 public class StartHandler implements HttpHandler {
 
@@ -38,7 +39,7 @@ public class StartHandler implements HttpHandler {
     }
 
     public void setResponse(int code, String url) {
-        response.put("id", "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d");
+        response.put("id", UUID.randomUUID().toString());
         response.put("url", url);
         switch(code) {
             case 1:
@@ -59,7 +60,7 @@ public class StartHandler implements HttpHandler {
             .uri(URI.create(adversaryUrl + "/api/game/start"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"1\", \"url\":\"http://localhost:" + port + "\", \"message\":\"Start client\"}"))
+            .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + port + "\", \"message\":\"Start client\"}"))
             .build();
         HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
     }
@@ -68,16 +69,10 @@ public class StartHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
-            if (verifyBody(exchange)) {
-                setResponse(1, url);
-                // if (!Objects.isNull(params)) createClient(params.get("url"));
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, response.toString().length());
-                exchange.getResponseBody().write(response.toString().getBytes());
-            } else {
-                setResponse(2, url);
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_ACCEPTED, response.length());
-                exchange.getResponseBody().write(response.toString().getBytes());
-            }
+            int code = verifyBody(exchange) ? 1 : 2;
+            setResponse(code, url);
+            exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
+            exchange.getResponseBody().write(response.toString().getBytes());
         } else {
             setResponse(3, url);
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, "Not found !".length());
