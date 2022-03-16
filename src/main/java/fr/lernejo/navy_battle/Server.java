@@ -18,13 +18,13 @@ public class Server {
         this.port = port;
     }
 
-    public void initServer() throws IOException {
+    public HttpServer initServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(this.port), 0);
         server.setExecutor(Executors.newFixedThreadPool(1));
         server.createContext("/ping", new PingHandler());
         server.createContext("/api/game/start", new StartHandler());
         server.createContext("/api/game/fire", new FireHandler());
-        server.start();
+        return server;
     }
 
     public void createClient(String adversaryUrl) throws IOException, InterruptedException {

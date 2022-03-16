@@ -1,5 +1,7 @@
 package fr.lernejo.navy_battle;
 
+import com.sun.net.httpserver.HttpServer;
+
 public class Launcher {
 
     public static void main(String[] args) {
@@ -7,9 +9,10 @@ public class Launcher {
         else {
             try {
                 int port = Integer.parseInt(args[0]);
-                Server server = new Server(port);
-                server.initServer();
-                if (args.length == 2) server.createClient(args[1]);
+                Server s = new Server(port);
+                HttpServer server = s.initServer();
+                if (args.length == 2) s.createClient(args[1]);
+                server.start();
                 System.out.println("Server is listening on port " + port);
             }
             catch (Exception e) { System.err.println(e); }
