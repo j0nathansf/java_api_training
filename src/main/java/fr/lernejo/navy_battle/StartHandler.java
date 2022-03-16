@@ -9,10 +9,6 @@ import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.UUID;
 
 public class StartHandler implements HttpHandler {
@@ -52,17 +48,6 @@ public class StartHandler implements HttpHandler {
                 response.put("message", "Not found !");
                 break;
         }
-    }
-
-    public void createClient(String adversaryUrl, int port) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest requestPost = HttpRequest.newBuilder()
-            .uri(URI.create(adversaryUrl + "/api/game/start"))
-            .setHeader("Accept", "application/json")
-            .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + port + "\", \"message\":\"Start client\"}"))
-            .build();
-        HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
     }
 
     @Override
