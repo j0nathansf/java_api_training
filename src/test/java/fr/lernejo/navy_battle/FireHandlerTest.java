@@ -11,38 +11,37 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-class StartHandlerTest {
-
+class FireHandlerTest {
     @Test
-    void test_start_handler_good_params() throws IOException, InterruptedException {
+    void test_fire_handler_good_params() throws IOException, InterruptedException {
         Server s = new Server(5000);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5000/api/game/fire?cell=F2"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{ \"id\": \"0c575465-21f6-43c9-8a2d-bc64c3ae6241\", \"url\": \"http://localhost:8795\", \"message\": \"I will crush you!\" }"))
+            .GET()
             .build();
         HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
         server.stop(1);
-        int expected = HttpURLConnection.HTTP_ACCEPTED;
+        int expected = HttpURLConnection.HTTP_OK;
         int result = resp.statusCode();
-        Assertions.assertThat(result).as("Response should be 202 Accepted").isEqualTo(expected);
+        Assertions.assertThat(result).as("Response should be 200 OK").isEqualTo(expected);
     }
 
     @Test
-    void test_start_handler_bad_params() throws IOException, InterruptedException {
+    void test_fire_handler_bad_params() throws IOException, InterruptedException {
         Server s = new Server(5000);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5000/api/game/fire"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{ \"id\": \"0c575465-21f6-43c9-8a2d-bc64c3ae6241\", \"url\": \"http://localhost:8795\""))
+            .GET()
             .build();
         HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
         server.stop(1);
@@ -52,16 +51,16 @@ class StartHandlerTest {
     }
 
     @Test
-    void test_start_handler_bad_method() throws IOException, InterruptedException {
+    void test_fire_handler_bad_method() throws IOException, InterruptedException {
         Server s = new Server(5000);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5000/api/game/fire?cell=F2"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .GET()
+            .DELETE()
             .build();
         HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
         server.stop(1);
