@@ -27,7 +27,7 @@ public class Server {
         return server;
     }
 
-    public void createClient(String adversaryUrl) throws IOException, InterruptedException {
+    public HttpResponse<String> createClient(String adversaryUrl) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest requestPost = HttpRequest.newBuilder()
             .uri(URI.create(adversaryUrl + "/api/game/start"))
@@ -36,6 +36,7 @@ public class Server {
             .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + this.port + "\", \"message\":\"Start client\"}"))
             .build();
         HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
+        return resp;
     }
 
 }

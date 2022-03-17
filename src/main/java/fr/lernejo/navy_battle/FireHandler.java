@@ -27,7 +27,6 @@ public class FireHandler implements HttpHandler {
             if (entry.length > 1) {
                 result.put(entry[0], entry[1]);
             } else {
-                System.out.println("I come here !");
                 result.put(entry[0], "");
             }
         }
