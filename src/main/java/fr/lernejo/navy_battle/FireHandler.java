@@ -26,7 +26,8 @@ public class FireHandler implements HttpHandler {
             String[] entry = param.split("=");
             if (entry.length > 1) {
                 result.put(entry[0], entry[1]);
-            }else{
+            } else {
+                System.out.println("I come here !");
                 result.put(entry[0], "");
             }
         }
@@ -37,7 +38,7 @@ public class FireHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if ("GET".contentEquals(exchange.getRequestMethod())) {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
-            if (!Objects.isNull(params) && !Objects.isNull(params.get("cell"))) {
+            if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 exchange.getResponseHeaders().add("Content-Type", "application/json");
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, response.toString().length());
                 exchange.getResponseBody().write(response.toString().getBytes());

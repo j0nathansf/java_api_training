@@ -51,6 +51,25 @@ class FireHandlerTest {
     }
 
     @Test
+    void test_fire_handler_bad_params_2() throws IOException, InterruptedException {
+        Server s = new Server(5000);
+        HttpServer server = s.initServer();
+        server.start();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:5000/api/game/fire?cell"))
+            .setHeader("Accept", "application/json")
+            .setHeader("Content-Type", "application/json")
+            .GET()
+            .build();
+        HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
+        server.stop(1);
+        int expected = HttpURLConnection.HTTP_BAD_REQUEST;
+        int result = resp.statusCode();
+        Assertions.assertThat(result).as("Response should be 400 Bad Request").isEqualTo(expected);
+    }
+
+    @Test
     void test_fire_handler_bad_method() throws IOException, InterruptedException {
         Server s = new Server(5000);
         HttpServer server = s.initServer();
