@@ -28,13 +28,16 @@ public class StartHandler implements HttpHandler {
         this.url = url;
     }
 
-    public boolean verifyBody(JSONObject jsonData) {
+    public boolean verifyBody(HttpExchange exchange) {
         try {
             File schemaFile = new File("src/main/resources/startSchema.json");
             JSONTokener schemaData = new JSONTokener(new FileInputStream(schemaFile));
             JSONObject jsonSchema = new JSONObject(schemaData);
+            JSONTokener schemaDataFile = new JSONTokener(new InputStreamReader(exchange.getRequestBody()));
+            JSONObject jsonData = new JSONObject(schemaDataFile);
             Schema schemaValidator = SchemaLoader.load(jsonSchema);
             schemaValidator.validate(jsonData);
+            response.put("url", jsonData.get("url").toString());
             return true;
         } catch(Exception e) {
             return false;
@@ -43,7 +46,6 @@ public class StartHandler implements HttpHandler {
 
     public void setResponse(int code, String url) {
         response.put("id", UUID.randomUUID().toString());
-        response.put("url", url);
         switch(code) {
             case 1:
                 response.put("message", "OK!");
@@ -61,13 +63,11 @@ public class StartHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
-            JSONObject jsonData = new JSONObject(new JSONTokener(new InputStreamReader(exchange.getRequestBody())));
-            int code = verifyBody(jsonData) ? 1 : 2;
-            setResponse(code, url);
+            int code = verifyBody(exchange) ? 1 : 2;
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
-            try { this.sendFire(jsonData.get("url").toString(), "A2"); }
-            catch (InterruptedException e) { e.printStackTrace(); }
+            try { if (code == 1) this.sendFire(response.get("url").toString(), "A2"); }
+            catch (Exception e) { System.out.println(e.getMessage()); }
         } else {
             setResponse(3, url);
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, response.toString().length());
@@ -77,6 +77,7 @@ public class StartHandler implements HttpHandler {
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
+        if (adversaryURL.length() == 0) return "";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))

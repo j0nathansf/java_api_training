@@ -18,12 +18,12 @@ class PingHandlerTest {
 
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5006);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/ping"))
+            .uri(URI.create("http://localhost:5006/ping"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .GET()

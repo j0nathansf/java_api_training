@@ -15,12 +15,12 @@ class StartHandlerTest {
 
     @Test
     void test_start_handler_good_params() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5007);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5007/api/game/start"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString("{ \"id\": \"0c575465-21f6-43c9-8a2d-bc64c3ae6241\", \"url\": \"http://localhost:8795\", \"message\": \"I will crush you!\" }"))
@@ -31,34 +31,34 @@ class StartHandlerTest {
         int result = resp.statusCode();
         Assertions.assertThat(result).as("Response should be 202 Accepted").isEqualTo(expected);
     }
-
+    
     @Test
     void test_start_handler_bad_params() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5008);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5008/api/game/start"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString("{ \"id\": \"0c575465-21f6-43c9-8a2d-bc64c3ae6241\", \"url\": \"http://localhost:8795\""))
+            .POST(HttpRequest.BodyPublishers.ofString("{ \"id\": \"0c575465-21f6-43c9-8a2d-bc64c3ae6241\", \"url\": \"http://localhost:8796\""))
             .build();
         HttpResponse<String> resp = client.send(request, HttpResponse.BodyHandlers.ofString());
-        server.stop(1);
         int expected = HttpURLConnection.HTTP_BAD_REQUEST;
         int result = resp.statusCode();
+        server.stop(1);
         Assertions.assertThat(result).as("Response should be 400 Bad Request").isEqualTo(expected);
     }
 
     @Test
     void test_start_handler_bad_method() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5009);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/start"))
+            .uri(URI.create("http://localhost:5009/api/game/start"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .GET()

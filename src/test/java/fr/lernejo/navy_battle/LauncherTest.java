@@ -31,10 +31,14 @@ class LauncherTest {
         Server s = new Server(5000);
         HttpServer server = s.initServer();
         server.start();
-        HttpResponse<String> resp = s.createClient("http://localhost:5000");
-        server.stop(1);
+        Server s1 = new Server(5001);
+        HttpServer server1 = s1.initServer();
+        server1.start();
+        HttpResponse<String> resp = s1.createClient("http://localhost:5000");
         int expected = HttpURLConnection.HTTP_ACCEPTED;
         int result = resp.statusCode();
+        server.stop(1);
+        server1.stop(1);
         Assertions.assertThat(result).as("Response should be 202 Accepted").isEqualTo(expected);
     }
 }

@@ -14,12 +14,12 @@ import java.net.http.HttpResponse;
 class FireHandlerTest {
     @Test
     void test_fire_handler_good_params() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5002);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/fire?cell=F2"))
+            .uri(URI.create("http://localhost:5002/api/game/fire?cell=F2"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .GET()
@@ -33,12 +33,12 @@ class FireHandlerTest {
 
     @Test
     void test_fire_handler_bad_params() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5003);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/fire"))
+            .uri(URI.create("http://localhost:5003/api/game/fire"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .GET()
@@ -52,12 +52,12 @@ class FireHandlerTest {
 
     @Test
     void test_fire_handler_bad_params_2() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5004);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/fire?cell"))
+            .uri(URI.create("http://localhost:5004/api/game/fire?cell"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .GET()
@@ -71,12 +71,12 @@ class FireHandlerTest {
 
     @Test
     void test_fire_handler_bad_method() throws IOException, InterruptedException {
-        Server s = new Server(5000);
+        Server s = new Server(5005);
         HttpServer server = s.initServer();
         server.start();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:5000/api/game/fire?cell=F2"))
+            .uri(URI.create("http://localhost:5005/api/game/fire?cell=F2"))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .DELETE()
