@@ -17,11 +17,16 @@ import java.util.UUID;
 
 public class StartHandler implements HttpHandler {
 
+    private final Game game;
     private final JSONObject response = new JSONObject("{\n" +
         "  \"id\": \"string\",\n" +
         "  \"url\": \"string\",\n" +
         "  \"message\": \"string\",\n" +
         "}");
+
+    public StartHandler(Game game) {
+        this.game = game;
+    }
 
     public boolean verifyBody(HttpExchange exchange) {
         try {
@@ -59,10 +64,10 @@ public class StartHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String url = "http://localhost:" + exchange.getLocalAddress().getPort();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
-            int code = verifyBody(exchange) ? 1 : 2; String adversaryUrl = response.get("url").toString(); setResponse(code, url);
+            int code = verifyBody(exchange) ? 1 : 2; this.game.setUrl(response.getString("url")); setResponse(code, url);
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
-            try { if (code == 1) this.sendFire(adversaryUrl, "A2"); }
+            try { Thread.sleep(1000); this.sendFire(this.game.getUrl(), "A2"); }
             catch (Exception e) { System.out.println(e); }
         } else {
             setResponse(3, url);
