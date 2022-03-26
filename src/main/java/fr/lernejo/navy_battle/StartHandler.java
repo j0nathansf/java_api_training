@@ -46,6 +46,7 @@ public class StartHandler implements HttpHandler {
 
     public void setResponse(int code, String url) {
         response.put("id", UUID.randomUUID().toString());
+        response.put("url", url);
         switch(code) {
             case 1:
                 response.put("message", "OK!");
@@ -63,11 +64,11 @@ public class StartHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
-            int code = verifyBody(exchange) ? 1 : 2;
+            int code = verifyBody(exchange) ? 1 : 2; String adversaryUrl = response.get("url").toString(); setResponse(code, url);
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
-            try { if (code == 1) this.sendFire(response.get("url").toString(), "A2"); }
-            catch (Exception e) { System.out.println(e.getMessage()); }
+            try { if (code == 1) this.sendFire(adversaryUrl, "A2"); }
+            catch (Exception e) { System.out.println(e); }
         } else {
             setResponse(3, url);
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, response.toString().length());
