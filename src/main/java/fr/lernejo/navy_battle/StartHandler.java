@@ -17,16 +17,11 @@ import java.util.UUID;
 
 public class StartHandler implements HttpHandler {
 
-    private final String url;
     private final JSONObject response = new JSONObject("{\n" +
         "  \"id\": \"string\",\n" +
         "  \"url\": \"string\",\n" +
         "  \"message\": \"string\",\n" +
         "}");
-
-    public StartHandler(String url) {
-        this.url = url;
-    }
 
     public boolean verifyBody(HttpExchange exchange) {
         try {
@@ -62,7 +57,7 @@ public class StartHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String url = "http://localhost:" + exchange.getLocalAddress().getPort() + exchange.getRequestURI().toString();
+        String url = "http://localhost:" + exchange.getLocalAddress().getPort();
         if ("POST".contentEquals(exchange.getRequestMethod())) {
             int code = verifyBody(exchange) ? 1 : 2; String adversaryUrl = response.get("url").toString(); setResponse(code, url);
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
@@ -78,13 +73,11 @@ public class StartHandler implements HttpHandler {
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        if (adversaryURL.length() == 0) return "";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
-            .GET()
             .build();
         HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
         return response.body();
