@@ -13,16 +13,23 @@ import java.util.concurrent.Executors;
 
 public class Server {
     private final int port;
+    private final String url;
 
     public Server(int port) {
         this.port = port;
+        this.url = "";
+    }
+
+    public Server(int port, String url) {
+        this.port = port;
+        this.url = url;
     }
 
     public HttpServer initServer() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(this.port), 0);
         server.setExecutor(Executors.newFixedThreadPool(1));
         server.createContext("/ping", new PingHandler());
-        server.createContext("/api/game/start", new StartHandler());
+        server.createContext("/api/game/start", new StartHandler(this.url));
         server.createContext("/api/game/fire", new FireHandler());
         return server;
     }
