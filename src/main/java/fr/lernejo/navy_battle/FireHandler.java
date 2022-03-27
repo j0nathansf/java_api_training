@@ -13,7 +13,6 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
 public class FireHandler implements HttpHandler {
 
@@ -53,22 +52,23 @@ public class FireHandler implements HttpHandler {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
+                try { if (this.running.get("running") && this.game.getUrl().length() != 0) this.sendFire("http://localhost:" + exchange.getRemoteAddress().getPort(), "F1"); }
+                catch (InterruptedException e) { e.printStackTrace(); }
             } else {
                 sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
             }
         } else {
             sendResponse(exchange, "Not found !", HttpURLConnection.HTTP_NOT_FOUND);
         }
+        exchange.close();
     }
 
     public void sendResponse(HttpExchange exchange, String response, int code) throws IOException {
         if (code == HttpURLConnection.HTTP_OK) exchange.getResponseHeaders().add("Content-Type", "application/json");
         exchange.sendResponseHeaders(code, response.length());
         exchange.getResponseBody().write(response.getBytes());
-        exchange.close();
     }
 
-    /*
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
         if (this.running.get("running")) { this.running.put("running", false); }
         HttpClient client = this.game.getClient();
@@ -80,5 +80,4 @@ public class FireHandler implements HttpHandler {
         HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
-     */
 }
