@@ -41,19 +41,17 @@ public class Server {
             .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + this.port + "\", \"message\":\"Start client\"}"))
             .build();
         HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
-        if (resp.statusCode() == HttpURLConnection.HTTP_ACCEPTED) this.sendFire(adversaryUrl, "A2");
+        if (resp.statusCode() == HttpURLConnection.HTTP_ACCEPTED) client.send(this.sendFire(adversaryUrl, "A2"), HttpResponse.BodyHandlers.ofString());
         return resp;
     }
 
-    public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
+    public HttpRequest sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
             .setHeader("Accept", "application/json")
             .setHeader("Content-Type", "application/json")
             .build();
-        HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+        return fireRequest;
     }
 
 }
