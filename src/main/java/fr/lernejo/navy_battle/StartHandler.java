@@ -62,9 +62,9 @@ public class StartHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String url = "http://localhost:" + exchange.getLocalAddress().getPort();
+        String url = "http://localhost:" + exchange.getLocalAddress().getPort(); int code = 3;
         if ("POST".contentEquals(exchange.getRequestMethod())) {
-            int code = verifyBody(exchange) ? 1 : 2; this.game.setUrl(response.getString("url")); setResponse(code, url);
+            code = verifyBody(exchange) ? 1 : 2; this.game.setUrl(response.getString("url")); setResponse(code, url);
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
         } else {
@@ -73,7 +73,7 @@ public class StartHandler implements HttpHandler {
             exchange.getResponseBody().write(response.toString().getBytes());
         }
         exchange.close();
-        try { this.sendFire(this.game.getUrl(), "A5"); }
+        try { if (code == 1) this.sendFire(this.game.getUrl(), "A5"); }
         catch (InterruptedException e) { e.printStackTrace(); }
     }
 
