@@ -70,7 +70,7 @@ public class FireHandler implements HttpHandler {
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        if (new Random().nextInt(5) == 1) { this.running.put("running", false); }
+        if (new Random().nextInt(7) == 1) { this.running.put("running", false); }
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))

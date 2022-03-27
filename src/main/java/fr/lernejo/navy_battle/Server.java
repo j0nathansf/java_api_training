@@ -3,6 +3,7 @@ package fr.lernejo.navy_battle;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -40,7 +41,19 @@ public class Server {
             .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + this.port + "\", \"message\":\"Start client\"}"))
             .build();
         HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
+        if (resp.statusCode() == HttpURLConnection.HTTP_ACCEPTED) this.sendFire(adversaryUrl, "A2");
         return resp;
+    }
+
+    public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest fireRequest = HttpRequest.newBuilder()
+            .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
+            .setHeader("Accept", "application/json")
+            .setHeader("Content-Type", "application/json")
+            .build();
+        HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
+        return response.body();
     }
 
 }
