@@ -51,20 +51,22 @@ public class FireHandler implements HttpHandler {
         if ("GET".contentEquals(exchange.getRequestMethod())) {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
-                exchange.getResponseHeaders().add("Content-Type", "application/json");
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, response.toString().length());
-                exchange.getResponseBody().write(response.toString().getBytes());
+                sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
                 try { if (this.running.get("running")) this.sendFire(this.game.getUrl(), "A2"); }
                 catch (InterruptedException e) { e.printStackTrace(); }
             } else {
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, "Bad request !".length());
-                exchange.getResponseBody().write("Bad request !".getBytes());
+                sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
             }
         } else {
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, "Not found !".length());
-            exchange.getResponseBody().write("Not found !".getBytes());
+            sendResponse(exchange, "Not found !", HttpURLConnection.HTTP_NOT_FOUND);
         }
         exchange.close();
+    }
+
+    public void sendResponse(HttpExchange exchange, String response, int code) throws IOException {
+        if (code == HttpURLConnection.HTTP_OK) exchange.getResponseHeaders().add("Content-Type", "application/json");
+        exchange.sendResponseHeaders(code, response.length());
+        exchange.getResponseBody().write(response.getBytes());
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
