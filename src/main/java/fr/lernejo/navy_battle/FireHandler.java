@@ -49,6 +49,7 @@ public class FireHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if ("GET".contentEquals(exchange.getRequestMethod())) {
+            System.out.println("Called");
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
@@ -70,7 +71,7 @@ public class FireHandler implements HttpHandler {
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        if (new Random().nextInt(7) == 1) { this.running.put("running", false); }
+        if (new Random().nextInt(2) == 1) { this.running.put("running", false); }
         HttpClient client = this.game.getClient();
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
