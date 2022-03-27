@@ -53,8 +53,8 @@ public class FireHandler implements HttpHandler {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
-                try { if (this.running.get("running") && this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "A2"); }
-                catch (InterruptedException e) { e.printStackTrace(); }
+                // try { if (this.running.get("running") && this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "A2"); }
+                // catch (InterruptedException e) { e.printStackTrace(); }
             } else {
                 sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
             }
@@ -70,6 +70,7 @@ public class FireHandler implements HttpHandler {
         exchange.close();
     }
 
+    /*
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
         if (new Random().nextInt(2) == 1) { this.running.put("running", false); }
         HttpClient client = this.game.getClient();
@@ -81,4 +82,5 @@ public class FireHandler implements HttpHandler {
         HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
+    */
 }
