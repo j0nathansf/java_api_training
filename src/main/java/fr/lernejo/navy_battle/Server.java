@@ -3,7 +3,6 @@ package fr.lernejo.navy_battle;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,7 +18,7 @@ public class Server {
 
     public Server(int port) {
         this.port = port;
-        this.game = new Game(new HashMap<>());
+        this.game = new Game(new HashMap<>(), new HashMap<>());
     }
 
     public HttpServer initServer() throws IOException {
@@ -33,6 +32,7 @@ public class Server {
 
     public HttpResponse<String> createClient(String adversaryUrl) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
+        this.game.setClient(client);
         this.game.setUrl(adversaryUrl);
         HttpRequest requestPost = HttpRequest.newBuilder()
             .uri(URI.create(adversaryUrl + "/api/game/start"))
@@ -41,17 +41,6 @@ public class Server {
             .POST(HttpRequest.BodyPublishers.ofString("{\"id\":\"" + UUID.randomUUID() + "\", \"url\":\"http://localhost:" + this.port + "\", \"message\":\"Start client\"}"))
             .build();
         HttpResponse<String> resp = client.send(requestPost, HttpResponse.BodyHandlers.ofString());
-        if (resp.statusCode() == HttpURLConnection.HTTP_ACCEPTED) client.send(this.sendFire(adversaryUrl, "A2"), HttpResponse.BodyHandlers.ofString());
         return resp;
     }
-
-    public HttpRequest sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        HttpRequest fireRequest = HttpRequest.newBuilder()
-            .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
-            .setHeader("Accept", "application/json")
-            .setHeader("Content-Type", "application/json")
-            .build();
-        return fireRequest;
-    }
-
 }

@@ -9,6 +9,10 @@ import org.json.JSONTokener;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.UUID;
 
 public class StartHandler implements HttpHandler {
@@ -69,6 +73,19 @@ public class StartHandler implements HttpHandler {
             exchange.getResponseBody().write(response.toString().getBytes());
         }
         exchange.close();
+        try { this.sendFire(this.game.getUrl(), "A5"); }
+        catch (InterruptedException e) { e.printStackTrace(); }
     }
 
+    public HttpResponse<String> sendFire(String adversaryURL, String cell) throws InterruptedException, IOException {
+        HttpClient client = HttpClient.newHttpClient();
+        this.game.setClient(client);
+        HttpRequest fireRequest = HttpRequest.newBuilder()
+            .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
+            .setHeader("Accept", "application/json")
+            .setHeader("Content-Type", "application/json")
+            .build();
+        HttpResponse<String> resp = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
+        return resp;
+    }
 }
