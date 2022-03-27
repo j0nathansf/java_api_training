@@ -53,8 +53,8 @@ public class FireHandler implements HttpHandler {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 response.put("shipLeft", this.running.get("running")); sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
-                try { if (!this.running.get("running")) { System.out.println("You lost !"); System.exit(0); } if (this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "F1"); }
-                catch (InterruptedException e) { e.printStackTrace(); }
+                // try { if (!this.running.get("running")) { System.out.println("You lost !"); System.exit(0); } if (this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "F1"); }
+                // catch (InterruptedException e) { e.printStackTrace(); }
             } else {
                 sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
             }
@@ -69,7 +69,7 @@ public class FireHandler implements HttpHandler {
         exchange.sendResponseHeaders(code, response.length());
         exchange.getResponseBody().write(response.getBytes());
     }
-
+    /*
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
         if (new Random().nextInt(2) == 0) { this.running.put("running", false); }
         HttpClient client = this.game.getClient();
@@ -84,4 +84,5 @@ public class FireHandler implements HttpHandler {
         if (!isShipLeft) { System.out.println("You won !"); System.exit(0); }
         return response.body();
     }
+     */
 }
