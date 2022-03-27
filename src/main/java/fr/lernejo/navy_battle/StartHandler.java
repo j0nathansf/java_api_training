@@ -67,14 +67,13 @@ public class StartHandler implements HttpHandler {
             int code = verifyBody(exchange) ? 1 : 2; this.game.setUrl(response.getString("url")); setResponse(code, url);
             exchange.sendResponseHeaders(code == 1 ? HttpURLConnection.HTTP_ACCEPTED : HttpURLConnection.HTTP_BAD_REQUEST, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
-            try { Thread.sleep(1000); this.sendFire(this.game.getUrl(), "A2"); }
-            catch (Exception e) { System.out.println(e); }
         } else {
             setResponse(3, url);
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
         }
-        exchange.close();
+        try { this.sendFire(this.game.getUrl(), "A2"); }
+        catch (Exception e) { System.out.println(e); }
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
