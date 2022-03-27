@@ -72,8 +72,9 @@ public class StartHandler implements HttpHandler {
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, response.toString().length());
             exchange.getResponseBody().write(response.toString().getBytes());
         }
-        try { this.sendFire(this.game.getUrl(), "A2"); }
+        try { this.sendFire(this.game.getUrl(), "A5"); }
         catch (Exception e) { System.out.println(e); }
+        exchange.close();
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {

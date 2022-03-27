@@ -52,7 +52,7 @@ public class FireHandler implements HttpHandler {
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
                 sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
-                try { if (this.running.get("running")) this.sendFire(this.game.getUrl(), "A2"); }
+                try { if (this.running.get("running") && this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "A2"); }
                 catch (InterruptedException e) { e.printStackTrace(); }
             } else {
                 sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
@@ -60,13 +60,13 @@ public class FireHandler implements HttpHandler {
         } else {
             sendResponse(exchange, "Not found !", HttpURLConnection.HTTP_NOT_FOUND);
         }
-        exchange.close();
     }
 
     public void sendResponse(HttpExchange exchange, String response, int code) throws IOException {
         if (code == HttpURLConnection.HTTP_OK) exchange.getResponseHeaders().add("Content-Type", "application/json");
         exchange.sendResponseHeaders(code, response.length());
         exchange.getResponseBody().write(response.getBytes());
+        exchange.close();
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
