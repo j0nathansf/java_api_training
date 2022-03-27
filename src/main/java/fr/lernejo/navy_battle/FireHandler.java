@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class FireHandler implements HttpHandler {
 
@@ -51,8 +52,8 @@ public class FireHandler implements HttpHandler {
             System.out.println("Called");
             Map<String, String> params = queryToMap(exchange.getRequestURI().getQuery());
             if (!Objects.isNull(params) && !Objects.isNull(params.get("cell")) && !params.get("cell").equals("")) {
-                sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
-                try { if (this.running.get("running") && this.game.getUrl().length() != 0) this.sendFire("http://localhost:" + exchange.getRemoteAddress().getPort(), "F1"); }
+                response.put("shipLeft", this.running.get("running")); sendResponse(exchange, response.toString(), HttpURLConnection.HTTP_OK);
+                try { if (!this.running.get("running")) { System.out.println("You lost !"); System.exit(0); } if (this.game.getUrl().length() != 0) this.sendFire(this.game.getUrl(), "F1"); }
                 catch (InterruptedException e) { e.printStackTrace(); }
             } else {
                 sendResponse(exchange, "Bad request !", HttpURLConnection.HTTP_BAD_REQUEST);
@@ -70,7 +71,7 @@ public class FireHandler implements HttpHandler {
     }
 
     public String sendFire(String adversaryURL, String cell) throws IOException, InterruptedException {
-        if (this.running.get("running")) { this.running.put("running", false); }
+        if (new Random().nextInt(150) == 6) { this.running.put("running", false); }
         HttpClient client = this.game.getClient();
         HttpRequest fireRequest = HttpRequest.newBuilder()
             .uri(URI.create(adversaryURL + "/api/game/fire?cell=" + cell))
@@ -78,6 +79,9 @@ public class FireHandler implements HttpHandler {
             .setHeader("Content-Type", "application/json")
             .build();
         HttpResponse<String> response = client.send(fireRequest, HttpResponse.BodyHandlers.ofString());
+        JSONObject jsonResponse = new JSONObject(response.body());
+        boolean isShipLeft = jsonResponse.getBoolean("shipLeft");
+        if (!isShipLeft) { System.out.println("You won !"); System.exit(0); }
         return response.body();
     }
 }
